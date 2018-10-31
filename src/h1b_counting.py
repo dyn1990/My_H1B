@@ -36,7 +36,7 @@ class H1B:
 		occupation_sorted = sorted(self.occupation_dict.items(), key=lambda x: (-x[1], x[0]))
 		state_sorted = sorted(self.state_dict.items(), key=lambda x: (-x[1], x[0]))
 
-		f = open(parent + '\\output\\top_10_occupations.txt', 'w')
+		f = open(parent + '/output/top_10_occupations.txt', 'w')
 		f.write(';'.join(['TOP_OCCUPATIONS', 'NUMBER_CERTIFIED_APPLICATIONS', 'PERCENTAGE']) + '\n')
 		for i in range(min(len(self.occupation_dict), 10)):
 			percentage = ''.join([str(round(occupation_sorted[i][1] / self.certify_num * 100, 1)), '%'])
@@ -44,7 +44,7 @@ class H1B:
 		f.close()
 
 
-		f = open(parent + '\\output\\top_10_states.txt', 'w')
+		f = open(parent + '/output/top_10_states.txt', 'w')
 		f.write(';'.join(['TOP_STATES', 'NUMBER_CERTIFIED_APPLICATIONS', 'PERCENTAGE']) + '\n')
 		for i in range(min(len(self.state_dict), 10)):
 			percentage = ''.join([str(round(state_sorted[i][1] / self.certify_num * 100, 1)), '%'])
@@ -54,7 +54,7 @@ class H1B:
 
 if __name__ == '__main__':
 	parent_dir = os.getcwd()
-	filename = parent_dir + '\\input\\h1b_input.csv'
+	filename = parent_dir + '/input/h1b_input.csv'
 	h1b = H1B(filename)
 	h1b.read_file()
 	h1b.output_TopN(10, parent_dir)
