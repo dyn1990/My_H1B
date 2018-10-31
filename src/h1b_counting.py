@@ -47,7 +47,8 @@ class H1B:
 		f = open(parent + '/output/top_10_states.txt', 'w')
 		f.write(';'.join(['TOP_STATES', 'NUMBER_CERTIFIED_APPLICATIONS', 'PERCENTAGE']) + '\n')
 		for i in range(min(len(self.state_dict), 10)):
-			percentage = ''.join([str(round(state_sorted[i][1] / self.certify_num * 100, 1)), '%'])
+			# percentage = ''.join([str(round(state_sorted[i][1] / self.certify_num * 100, 1)), '%'])
+			percentage = str(round(state_sorted[i][1] / self.certify_num * 100, 1))
 			f.write(';'.join([str(char) for char in state_sorted[i]] + [percentage]) + '\n')
 		f.close()
 
