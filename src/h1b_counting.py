@@ -19,6 +19,14 @@ class H1B:
 		self.occupation_dict = {}
 		self.state_dict = {}
 
+	@classmethod
+	def fromFilename(cls, only_filename):
+		'''
+		initialize the class from the file name only, without os.path
+		'''
+		filename = os.getcwd() + '/input/' + only_filename
+		return cls(filename)
+
 
 	def record_title(self, row):
 		'''
@@ -96,7 +104,7 @@ class H1B:
 		else:
 			print('No statistics found')
 			return
-		f = open(filename, 'w')
+		f = open(os.getcwd() + '/output/' + filename, 'w')
 		## write column titles first
 		f.write(';'.join(params_out) + '\n')
 		## write the top N statistics
@@ -109,14 +117,16 @@ class H1B:
 if __name__ == '__main__':
 	
 
-	parent_dir = os.getcwd()
-	filename = parent_dir + '/input/h1b_input.csv'
-	h1b = H1B(filename)
-	print('Processing Statistics ...')
-	h1b.read_file()
+	h1b = H1B.fromFilename('h1b_input.csv')
+	print('Initialization completed ...')
 
-	filenames = {'occupation': parent_dir + '/output/top_10_occupations.txt', 
-					'states': parent_dir + '/output/top_10_states.txt'}
+	print('Start processing Statistics ...')
+	h1b.read_file()
+	print('Finished processing Statistics ...')
+
+	print('Start Outputing ...')
+	filenames = {'occupation': 'top_10_occupations.txt', 
+					'states': 'top_10_states.txt'}
 	params = {'occupation': ['TOP_OCCUPATIONS', 'NUMBER_CERTIFIED_APPLICATIONS', 'PERCENTAGE'],
 				'states': ['TOP_STATES', 'NUMBER_CERTIFIED_APPLICATIONS', 'PERCENTAGE']}
 	N = 10
