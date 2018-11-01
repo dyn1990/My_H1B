@@ -29,7 +29,7 @@ class H1B:
 		if os.path.isfile(filename):
 			return cls(filename)
 		else:
-			print('Input File Not Found')
+			print('Input File Not Found ...')
 			return False
 		
 
@@ -125,7 +125,7 @@ def main():
 	'''
 	InputFile = 'h1b_input.csv'
 	h1b = H1B.fromFilename(InputFile)
-	if not h1b: raise SystemExit('Program stopped because of no inputfile')
+	if not h1b: raise SystemExit('Program stopped because of no input file ...')
 	print('Initialization completed ...')
 
 	print('Start processing Statistics ...')
