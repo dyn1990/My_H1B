@@ -116,8 +116,10 @@ class H1B:
 
 if __name__ == '__main__':
 	
-
-	h1b = H1B.fromFilename('h1b_input.csv')
+	try:
+		h1b = H1B.fromFilename('h1bddd.csv')
+	except:
+		print('Input file not foud ...')
 	print('Initialization completed ...')
 
 	print('Start processing Statistics ...')
@@ -133,6 +135,6 @@ if __name__ == '__main__':
 
 	for stat in ['occupation', 'states']:
 		h1b.output_TopN(stat, filenames[stat], params[stat], N)
-		print('Done output {}.'.format(stat))
+		print('Done output {} ...'.format(stat))
 
-	print('Finished All...')
+	print('Finished All ...')
