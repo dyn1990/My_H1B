@@ -29,7 +29,7 @@ class H1B:
 		try:
 			os.path.isfile(filename)
 			return cls(filename)
-		else:
+		except:
 			print('Input File Not Found')
 			return
 		
