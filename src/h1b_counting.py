@@ -19,14 +19,20 @@ class H1B:
 		self.occupation_dict = {}
 		self.state_dict = {}
 
+
 	@classmethod
 	def fromFilename(cls, only_filename):
 		'''
 		initialize the class from the file name only, without os.path
 		'''
 		filename = os.getcwd() + '/input/' + only_filename
-		return cls(filename)
-
+		try:
+			os.path.isfile(filename)
+			return cls(filename)
+		else:
+			print('Input File Not Found')
+			return
+		
 
 	def record_title(self, row):
 		'''
@@ -116,10 +122,8 @@ class H1B:
 
 if __name__ == '__main__':
 	
-	try:
-		h1b = H1B.fromFilename('h1bddd.csv')
-	except:
-		print('Input file not foud ...')
+	InputFile = 'h1bddd.csv'
+	h1b = H1B.fromFilename(InputFile)
 	print('Initialization completed ...')
 
 	print('Start processing Statistics ...')
