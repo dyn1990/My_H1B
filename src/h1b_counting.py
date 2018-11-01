@@ -26,13 +26,11 @@ class H1B:
 		initialize the class from the file name only, without os.path
 		'''
 		filename = os.getcwd() + '/input/' + only_filename
-		try:
-			print(filename)
-			os.path.isfile(filename)
+		if os.path.isfile(filename):
 			return cls(filename)
-		except:
+		else:
 			print('Input File Not Found')
-			return
+			return False
 		
 
 	def record_title(self, row):
@@ -125,6 +123,7 @@ if __name__ == '__main__':
 	
 	InputFile = 'h1bddd.csv'
 	h1b = H1B.fromFilename(InputFile)
+	if not h1b: raise SystemExit('Program stopped because of no inputfile')
 	print('Initialization completed ...')
 
 	print('Start processing Statistics ...')
