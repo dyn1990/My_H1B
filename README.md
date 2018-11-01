@@ -25,7 +25,7 @@ Each line of the `top_10_states.txt` contains the following:
 The number of the records in the dataset for each year is more large, therefore the code uses a dynamical reading and extraction to gather the statistics needed. Specifically:
 * Construct a H1B class, where all the statistics needed are initialized. We maintain the statistics through out the main program.
 * Read headers, locate the columns that contain relative information.
-* Read line by line from the dataset, extract information about the occupation and states in that record, and dynamically update the statistics.
+* Read line by line from the dataset, clean and extract information about the occupation and states in that record, and dynamically update the statistics. This dynamic update significantly reduces the memory consumption.
 * Sort the statistics, then output to .txt files.
 
 # How to run it
