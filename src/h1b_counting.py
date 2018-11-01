@@ -27,6 +27,7 @@ class H1B:
 		'''
 		filename = os.getcwd() + '/input/' + only_filename
 		try:
+			print(filename)
 			os.path.isfile(filename)
 			return cls(filename)
 		except:
