@@ -119,8 +119,10 @@ class H1B:
 		f.close()
 
 
-if __name__ == '__main__':
-	
+def main():
+	'''
+	main function of the program
+	'''
 	InputFile = 'h1bddd.csv'
 	h1b = H1B.fromFilename(InputFile)
 	if not h1b: raise SystemExit('Program stopped because of no inputfile')
@@ -142,3 +144,9 @@ if __name__ == '__main__':
 		print('Done output {} ...'.format(stat))
 
 	print('Finished All ...')
+
+
+
+if __name__ == '__main__':
+	main()
+	
