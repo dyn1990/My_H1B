@@ -2,60 +2,127 @@ from utils import strip
 import os
 
 class H1B:
+	'''
+	H1B class to count the number of certified occupations and states
+	'''
 	def __init__(self, filename):
 		self.file = filename
 		self.initialize_stats()
 
+
 	def initialize_stats(self):
-		self.certify_num = 0
+		'''
+		initialization of needed parameters and dictionaries for
+		occupation and state statistics
+		'''
+		self.status_num = 0
 		self.occupation_dict = {}
 		self.state_dict = {}
 
+
+	def record_title(self, row):
+		'''
+		loop over the titles once to find the corresponding indices
+		some of the matching cases are hardcoded because the format 
+		for each year might be different. it only searches for indices
+		of visa status, applicant position and employer state.
+		This runs in O(k) where k is number of columns.
+		'''
+		for j, title in enumerate(row):
+			if title in ['CASE_STATUS', 'STATUS']:
+				status_idx = j
+			elif title in ['SOC_NAME', 'LCA_CASE_SOC_NAME']:
+				occupation_idx = j
+			elif title in ['WORKSITE_STATE', 'LCA_CASE_WORKLOC1_STATE']:
+				state_idx = j
+		return [status_idx, occupation_idx, state_idx]
+
+
+	def record_line(self, row, indices, status):
+		'''
+		extract the occupation and state information from each line
+		of input, store them into the dictionaries initialized in the class
+		This runs in O(1), since it only get two items from list (ignoring strip)
+		'''
+		if len(row) <= indices[-1]:
+			print('Warning: skipping one record because of incorrect format')
+		elif row[indices[0]] == status:
+			self.status_num += 1
+			occ_key, state_key = strip(row[indices[1]]), strip(row[indices[2]])
+			self.occupation_dict[occ_key] = self.occupation_dict.get(occ_key, 0) + 1
+			self.state_dict[state_key] = self.state_dict.get(state_key, 0) + 1
+
+
 	def read_file(self):
+		'''
+		main function that reads the file, extract information and
+		records the statistics
+		This runs in O(n), where n is the number of records
+		'''
 		with open(self.file) as f:
-			for idx, line in enumerate(f):
-				row = line.split(';')
-				if idx == 0:
-					## loop over the titles once to find the corresponding indices
-					for j, title in enumerate(row):
-						if title == 'CASE_NUMBER':
-							case_idx = j
-						elif title == 'CASE_STATUS':
-							certify_idx = j
-						elif title == 'SOC_NAME':
-							occupation_idx = j
-						elif title == 'WORKSITE_STATE':
-							state_idx = j
-				elif row[certify_idx] == 'CERTIFIED':
-					self.certify_num += 1
-					occ_key, state_key = strip(row[occupation_idx]), strip(row[state_idx])
-					self.occupation_dict[occ_key] = self.occupation_dict.get(occ_key, 0) + 1
-					self.state_dict[state_key] = self.state_dict.get(state_key, 0) + 1
+			idx = 0
+			while True:
+				## skipping the records where there is format error
+				try:
+					line = next(f)
+				except StopIteration:
+					break
+				except:
+					print('Warning: skipping one record because of incorrect format')
+					continue
 
-	def output_TopN(self, n, parent):
-		occupation_sorted = sorted(self.occupation_dict.items(), key=lambda x: (-x[1], x[0]))
-		state_sorted = sorted(self.state_dict.items(), key=lambda x: (-x[1], x[0]))
+				line = line.split(';')
 
-		f = open(parent + '/output/top_10_occupations.txt', 'w')
-		f.write(';'.join(['TOP_OCCUPATIONS', 'NUMBER_CERTIFIED_APPLICATIONS', 'PERCENTAGE']) + '\n')
-		for i in range(min(len(self.occupation_dict), 10)):
-			percentage = ''.join([str(round(occupation_sorted[i][1] * 100.0 / self.certify_num, 1)), '%'])
-			f.write(';'.join([str(char) for char in occupation_sorted[i]] + [percentage]) + '\n')
-		f.close()
+				if idx ==0:
+					indices = self.record_title(line)
+				else:
+					try:
+						self.record_line(line, indices, 'CERTIFIED')
+					except:
+						continue
+				idx += 1
+				
+				if idx % 100000 == 0:
+					print('Finished scanning {} records...'.format(idx))
 
-
-		f = open(parent + '/output/top_10_states.txt', 'w')
-		f.write(';'.join(['TOP_STATES', 'NUMBER_CERTIFIED_APPLICATIONS', 'PERCENTAGE']) + '\n')
-		for i in range(min(len(self.state_dict), 10)):
-			percentage = ''.join([str(round(state_sorted[i][1]  * 100.0 / self.certify_num, 1)), '%'])
-			# percentage = str(round(state_sorted[i][1] * 100.0 / self.certify_num, 1))
-			f.write(';'.join([str(char) for char in state_sorted[i]] + [percentage]) + '\n')
+	def output_TopN(self, stats_dict, filename, params_out, n):
+		'''
+		main function that outputs the needed files.
+		'''
+		if stats_dict =='occupation':
+			sorted_stats = sorted(self.occupation_dict.items(), key=lambda x: (-x[1], x[0]))
+		elif stats_dict == 'states':
+			sorted_stats = sorted(self.state_dict.items(), key=lambda x: (-x[1], x[0]))
+		else:
+			print('No statistics found')
+			return
+		f = open(filename, 'w')
+		## write column titles first
+		f.write(';'.join(params_out) + '\n')
+		## write the top N statistics
+		for i in range(min(len(sorted_stats), 10)):
+			percentage = ''.join([str(round(sorted_stats[i][1] * 100.0 / self.status_num, 1)), '%'])
+			f.write(';'.join([str(c) for c in sorted_stats[i]] + [percentage]) + '\n')
 		f.close()
 
 
 if __name__ == '__main__':
+	
+
 	parent_dir = os.getcwd()
 	filename = parent_dir + '/input/h1b_input.csv'
 	h1b = H1B(filename)
+	print('Processing Statistics ...')
 	h1b.read_file()
-	h1b.output_TopN(10, parent_dir)
+
+	filenames = {'occupation': parent_dir + '/output/top_10_occupations.txt', 
+					'states': parent_dir + '/output/top_10_states.txt'}
+	params = {'occupation': ['TOP_OCCUPATIONS', 'NUMBER_CERTIFIED_APPLICATIONS', 'PERCENTAGE'],
+				'states': ['TOP_STATES', 'NUMBER_CERTIFIED_APPLICATIONS', 'PERCENTAGE']}
+	N = 10
+
+	for stat in ['occupation', 'states']:
+		h1b.output_TopN(stat, filenames[stat], params[stat], N)
+		print('Done output {}.'.format(stat))
+
+	print('Finished All...')
