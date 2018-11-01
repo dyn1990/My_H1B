@@ -123,7 +123,7 @@ def main():
 	'''
 	main function of the program
 	'''
-	InputFile = 'h1bddd.csv'
+	InputFile = 'h1b_input.csv'
 	h1b = H1B.fromFilename(InputFile)
 	if not h1b: raise SystemExit('Program stopped because of no inputfile')
 	print('Initialization completed ...')
